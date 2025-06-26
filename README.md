@@ -22,9 +22,7 @@ You can customize urself if ur using this script and pull PR too :}
 
 TIP: Use this tool with cronjob or my TODolist cli to integrate daily so u won't forgot 
 
-
-WHY? this was archived chat with Chatgpt idk when but 
-
+WHY?
 
 Yh you NEED to learn to do fast conversion. It matters when time is tight, and you're stuck deep in offsets, traces. (Real talk: From a live Security Review, hosted by Redacted Company — 2022 — where we were drowning in conversions while our opponent just kept running the track without a single hitch. and i believe this was also a reason for losing CTF ,point and of $$ .
 
