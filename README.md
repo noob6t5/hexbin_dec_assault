@@ -28,7 +28,7 @@ WHY? this was archived chat with Chatgpt idk when but
 
 Yh you NEED to learn to do fast conversion. It matters when time is tight, and you're stuck deep in offsets, traces. (Real talk: From a live Security Review, hosted by Redacted Company — 2022 — where we were drowning in conversions while our opponent just kept running the track without a single hitch. and i believe this was also a reason for losing CTF ,point and of $$ .
 
-If Skills Matches or is in ur level  but opp can do then 
+If Skills Matches or is in ur level  but opp can do conv better  then 
 
 Faster conversions → faster debugging → faster exploit → faster report → faster bounty. timing matters
 
