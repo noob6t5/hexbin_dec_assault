@@ -3,6 +3,10 @@ CLI for daily practising Conversion betn hex,binary &amp;dec So that one look in
 
 This is the CLI tool that i used2 and using to practise the conversion betn 
 
+---
+Mastery of numbers is table stakes for being a weapon in RE, pwn, exploit dev, malware RE, firmware busting, or vuln research.
+---
+
 Decimal ↔ Hexadecimal
 
 Decimal ↔ Binary
@@ -17,3 +21,13 @@ You can customize urself if ur using this script and pull PR too :}
 
 
 TIP: Use this tool with cronjob or my TODolist cli to integrate daily so u won't forgot 
+
+
+WHY? this was archived chat with Chatgpt idk when but 
+
+
+Yh u need to learn to do fast converison
+
+![moti](https://github.com/user-attachments/assets/33969d70-ab0f-4fa1-9eed-f4ca956fa231)
+
+
