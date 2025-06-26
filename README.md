@@ -26,7 +26,11 @@ TIP: Use this tool with cronjob or my TODolist cli to integrate daily so u won't
 WHY? this was archived chat with Chatgpt idk when but 
 
 
-Yh u need to learn to do fast converison
+Yh you NEED to learn to do fast conversion. It matters when time is tight, and you're stuck deep in offsets, traces. (Real talk: From a live Security Review, hosted by Redacted Company — 2022 — where we were drowning in conversions while our opponent just kept running the track without a single hitch. and i believe this was also a reason for losing CTF ,point and of $$ .
+
+If Skills Matches or is in ur level  but opp can do then 
+
+Faster conversions → faster debugging → faster exploit → faster report → faster bounty. timing matters
 
 ![moti](https://github.com/user-attachments/assets/33969d70-ab0f-4fa1-9eed-f4ca956fa231)
 
