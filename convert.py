@@ -2,8 +2,6 @@ import random
 import time
 import sys
 
-# Roasts, shuffled for no repeats until exhaustion
-roast_pool = []
 roasts = [
     "Bro... did you just forget BASIC math? Go touch grass.",
     "You're about as useful as a screen door on a submarine.",
@@ -13,7 +11,7 @@ roasts = [
     "Garis Jhakne",
     "Makadosk even bot do better then u MF",
     "Assembly xoddye mug",
-    "K exploit Dev banxas mug yesari"
+    "K exploit Dev banxas mug yesari",
     "I've seen malware do better conversions, lmao.",
     "Was that a fat-finger, or are you just built broken?",
     "MG. Even NULL pointers aren't this empty.",
@@ -28,27 +26,16 @@ roasts = [
     "That endian flip was harder than your answer.",
 ]
 
-conversion_types = [
-    "dec_to_hex",
-    "dec_to_bin",
-    "hex_to_dec",
-    "hex_to_bin",
-    "bin_to_dec",
-    "bin_to_hex"
-]
-
-wrong_answers = {}
-start_time = time.time()
-streak = 0
-total = 0
-
 def get_roast():
-    global roast_pool
-    if not roast_pool:
-        roast_pool = random.sample(roasts, len(roasts))
-    return roast_pool.pop()
+    return random.choice(roasts)
 
-# Conversion functions
+def safe_input(prompt):
+    try:
+        return input(prompt)
+    except (EOFError, KeyboardInterrupt):
+        print("\nQuit like a bitch. See ya.")
+        sys.exit()
+
 def dec_to_hex(n):
     return hex(n)
 
@@ -56,60 +43,27 @@ def dec_to_bin(n):
     return bin(n)
 
 def hex_to_dec(h):
-    return int(h, 16)
+    return str(int(h, 16))
 
 def hex_to_bin(h):
     return bin(int(h, 16))
 
 def bin_to_dec(b):
-    return int(b, 2)
+    return str(int(b, 2))
 
 def bin_to_hex(b):
     return hex(int(b, 2))
 
-# Endian flip helpers
-def flip_endian(hexstr, chunk_size_bytes):
-    """
-    Flip endianness of hex string.
-    hexstr: string like '0x1234abcd'
-    chunk_size_bytes: 2 (16bit), 3 (24bit), 4 (32bit)
-    """
-    # Clean hex (strip 0x)
-    h = hexstr[2:] if hexstr.startswith('0x') else hexstr
-    # Pad if necessary (must be even length)
-    if len(h) % 2 != 0:
-        h = '0' + h
-
-    # Split into bytes
-    bytes_list = [h[i:i+2] for i in range(0, len(h), 2)]
-
-    # Ensure total bytes is divisible by chunk size
-    if len(bytes_list) % chunk_size_bytes != 0:
-        # pad at start with 00 bytes (big endian style)
-        pad_len = chunk_size_bytes - (len(bytes_list) % chunk_size_bytes)
-        bytes_list = ['00'] * pad_len + bytes_list
-
-    # Flip bytes in each chunk
-    flipped_chunks = []
-    for i in range(0, len(bytes_list), chunk_size_bytes):
-        chunk = bytes_list[i:i+chunk_size_bytes]
-        flipped_chunks += chunk[::-1]
-
-    flipped_hex = ''.join(flipped_chunks).lstrip('0')
-    if flipped_hex == '':
-        flipped_hex = '0'
-
-    return '0x' + flipped_hex
-
-def safe_input(prompt):
+def ascii_to_alpha(code_str):
+    # code_str = space separated decimal ASCII codes
     try:
-        return input(prompt)
-    except EOFError:
-        print("\nCowardice detected. Exiting.")
-        sys.exit()
-    except KeyboardInterrupt:
-        print("\nQuit like a bitch. See ya.")
-        sys.exit()
+        chars = [chr(int(c)) for c in code_str.strip().split()]
+        return ''.join(chars)
+    except:
+        return None
+
+def alpha_to_ascii(s):
+    return ' '.join(str(ord(c)) for c in s)
 
 def is_valid_bin(s):
     return all(c in '01' for c in s)
@@ -130,154 +84,156 @@ def is_valid_dec(s):
     except:
         return False
 
-def ask_conversion_question():
-    global streak, total
-    ctype = random.choice(conversion_types)
+def generate_question(conv_type):
     number = random.randint(0, 255)
-
-    prompt = ""
-    correct = ""
-    user = ""
-
-    if ctype == "dec_to_hex":
-        prompt = f"DECIMAL → HEX :: [{number}]"
-        correct = dec_to_hex(number)
-        print(f"\n🔥 Convert {prompt}")
-        user = safe_input("→ HEX (with 0x): ").strip().lower()
-        if not is_valid_hex(user):
-            print("❌ Invalid HEX input.")
-            return False
-
-    elif ctype == "dec_to_bin":
-        prompt = f"DECIMAL → BINARY :: [{number}]"
-        correct = dec_to_bin(number)
-        print(f"\n🔥 Convert {prompt}")
-        user = safe_input("→ BINARY (with 0b): ").strip().lower()
-        if not (user.startswith('0b') and is_valid_bin(user[2:])):
-            print("❌ Invalid BINARY input.")
-            return False
-
-    elif ctype == "hex_to_dec":
+    if conv_type == "dec_to_hex":
+        return f"DECIMAL → HEX :: [{number}]", dec_to_hex(number)
+    elif conv_type == "dec_to_bin":
+        return f"DECIMAL → BINARY :: [{number}]", dec_to_bin(number)
+    elif conv_type == "hex_to_dec":
         h = hex(number)
-        prompt = f"HEX → DECIMAL :: [{h}]"
-        correct = str(hex_to_dec(h))
-        print(f"\n🔥 Convert {prompt}")
-        user = safe_input("→ DECIMAL: ").strip()
-        if not is_valid_dec(user):
-            print("❌ Invalid DECIMAL input.")
-            return False
-
-    elif ctype == "hex_to_bin":
+        return f"HEX → DECIMAL :: [{h}]", hex_to_dec(h)
+    elif conv_type == "hex_to_bin":
         h = hex(number)
-        prompt = f"HEX → BINARY :: [{h}]"
-        correct = hex_to_bin(h)
-        print(f"\n🔥 Convert {prompt}")
-        user = safe_input("→ BINARY (with 0b): ").strip().lower()
-        if not (user.startswith('0b') and is_valid_bin(user[2:])):
-            print("❌ Invalid BINARY input.")
-            return False
-
-    elif ctype == "bin_to_dec":
+        return f"HEX → BINARY :: [{h}]", hex_to_bin(h)
+    elif conv_type == "bin_to_dec":
         b = bin(number)
-        prompt = f"BINARY → DECIMAL :: [{b}]"
-        correct = str(bin_to_dec(b))
-        print(f"\n🔥 Convert {prompt}")
-        user = safe_input("→ DECIMAL: ").strip()
-        if not is_valid_dec(user):
-            print("❌ Invalid DECIMAL input.")
-            return False
-
-    elif ctype == "bin_to_hex":
+        return f"BINARY → DECIMAL :: [{b}]", bin_to_dec(b)
+    elif conv_type == "bin_to_hex":
         b = bin(number)
-        prompt = f"BINARY → HEX :: [{b}]"
-        correct = bin_to_hex(b)
-        print(f"\n🔥 Convert {prompt}")
-        user = safe_input("→ HEX (with 0x): ").strip().lower()
+        return f"BINARY → HEX :: [{b}]", bin_to_hex(b)
+    elif conv_type == "ascii_to_alpha":
+        # random ASCII decimal codes, space separated
+        length = random.randint(3, 7)
+        codes = [str(random.randint(32, 126)) for _ in range(length)]
+        code_str = ' '.join(codes)
+        alpha = ascii_to_alpha(code_str)
+        return f"ASCII DECIMAL CODES → ALPHABET :: [{code_str}]", alpha
+    elif conv_type == "alpha_to_ascii":
+        # random string from printable ascii chars
+        length = random.randint(3, 7)
+        s = ''.join(chr(random.randint(32,126)) for _ in range(length))
+        ascii_codes = alpha_to_ascii(s)
+        return f"ALPHABET → ASCII DECIMAL CODES :: [{s}]", ascii_codes
+    else:
+        return None, None
+
+def validate_answer(conv_type, user, correct):
+    user = user.strip()
+    correct = correct.strip()
+    if conv_type in ["dec_to_hex", "bin_to_hex", "hex_to_bin"]:
+        # normalize hex to lowercase with 0x
+        user = user.lower()
+        if not user.startswith("0x"):
+            return False
+        # validate hex string content
         if not is_valid_hex(user):
-            print("❌ Invalid HEX input.")
             return False
-
+        return user == correct.lower()
+    elif conv_type in ["dec_to_bin", "hex_to_bin"]:
+        # normalize bin to lowercase with 0b
+        user = user.lower()
+        if not user.startswith("0b"):
+            return False
+        if not is_valid_bin(user[2:]):
+            return False
+        return user == correct.lower()
+    elif conv_type in ["hex_to_dec", "bin_to_dec"]:
+        if not is_valid_dec(user):
+            return False
+        return user == correct
+    elif conv_type == "ascii_to_alpha":
+        # user input is string, compare directly
+        return user == correct
+    elif conv_type == "alpha_to_ascii":
+        # user input is space separated decimals
+        try:
+            user_codes = user.split()
+            correct_codes = correct.split()
+            if len(user_codes) != len(correct_codes):
+                return False
+            for uc, cc in zip(user_codes, correct_codes):
+                if int(uc) != int(cc):
+                    return False
+            return True
+        except:
+            return False
     else:
-        print("WTF... Unknown conversion type.")
         return False
 
-    if user == correct:
-        streak += 1
-        total += 1
-        print(f"✔️ Correct, beast. Streak: {streak} | Total: {total}")
-        return True
-    else:
-        streak = 0
-        total += 1
-        print(f"❌ WRONG. Correct answer → {correct}")
-        print(f"💀 {get_roast()}")
-        wrong_answers[ctype] = wrong_answers.get(ctype, 0) + 1
-        return False
-
-
-def ask_endian_question():
-    global streak, total
-    # Choose a random hex number of 1 to 4 bytes (8-32 bits)
-    length_bytes = random.choice([2,3,4])
-    max_val = (1 << (length_bytes * 8)) -1
-    number = random.randint(0, max_val)
-
-    hexnum = hex(number)
-    # User must flip endian of this hex num
-    prompt = f"FLIP ENDIANESS ({length_bytes*8} bits) :: [{hexnum}]"
-    print(f"\n🔥 Convert {prompt}")
-
-    correct = flip_endian(hexnum, length_bytes)
-    user = safe_input("→ Your flipped HEX (with 0x): ").strip().lower()
-    if not is_valid_hex(user):
-        print("❌ Invalid HEX input.")
-        return False
-
-    if user == correct:
-        streak += 1
-        total += 1
-        print(f"✔️ Correct, endian warrior. Streak: {streak} | Total: {total}")
-        return True
-    else:
-        streak = 0
-        total += 1
-        print(f"❌ WRONG. Correct answer → {correct}")
-        print(f"💀 {get_roast()}")
-        wrong_answers["endian_flip"] = wrong_answers.get("endian_flip", 0) + 1
-        return False
-
-
-def main_game_loop():
+def print_menu():
     print("""
 🩸 ========================= 🩸
-    BINARY ↔ HEX ↔ DEC WAR
-    + ENDIAN HELL MODE ACTIVATED
+    ASCII ↔ ALPHABET & BASE WAR
 🩸 ========================= 🩸
 
 💣 Rules:
 - No mercy.
+- Choose your poison.
 - Get it right, keep the streak.
 - Fail, and I'll roast you harder than your CPU under prime95.
 
 CTRL+C to bail like a coward.
+
+Pick conversion type:
+ 1. dec_to_hex
+ 2. dec_to_bin
+ 3. hex_to_dec
+ 4. hex_to_bin
+ 5. bin_to_dec
+ 6. bin_to_hex
+ 7. ascii_to_alpha
+ 8. alpha_to_ascii
+ 9. Switch mode / Quit
 """)
 
-    try:
-        while True:
-            # 75% normal conversions, 25% endian flips for spice
-            if random.random() < 0.75:
-                ask_conversion_question()
-            else:
-                ask_endian_question()
+def main():
+    streak = 0
+    total = 0
+    wrong_answers = {}
+    while True:
+        print_menu()
+        choice = safe_input("→ Your choice (number): ").strip()
+        if choice == '9':
+            print("Peace out, warrior.")
+            break
+        choices_map = {
+            '1': "dec_to_hex",
+            '2': "dec_to_bin",
+            '3': "hex_to_dec",
+            '4': "hex_to_bin",
+            '5': "bin_to_dec",
+            '6': "bin_to_hex",
+            '7': "ascii_to_alpha",
+            '8': "alpha_to_ascii",
+        }
+        conv_type = choices_map.get(choice)
+        if not conv_type:
+            print("Invalid choice, dipshit. Try again.")
+            continue
 
-    except KeyboardInterrupt:
-        elapsed = time.time() - start_time
-        print("\nCowardly quit detected. Here's your stats:")
-        print(f"Total questions: {total}")
-        print(f"Wrong answers breakdown: {wrong_answers}")
-        print(f"Time elapsed: {elapsed:.2f}s")
-        print("Come back harder next time, or stay a weak-ass script kiddie.")
+        print(f"\nLocking into mode: {conv_type}. Crush it. CTRL+C to bail.\n")
+        try:
+            while True:
+                prompt, correct = generate_question(conv_type)
+                if prompt is None:
+                    print("Broken conversion type, aborting.")
+                    break
+                print(f"🔥 Convert {prompt}")
+                user = safe_input("→ Your answer: ").strip()
+                if not validate_answer(conv_type, user, correct):
+                    streak = 0
+                    total += 1
+                    wrong_answers[conv_type] = wrong_answers.get(conv_type, 0) + 1
+                    print(f"❌ WRONG. Correct answer → {correct}")
+                    print(f"💀 {get_roast()}")
+                else:
+                    streak += 1
+                    total += 1
+                    print(f"✔️ Correct, beast. Streak: {streak} | Total: {total}\n")
+        except KeyboardInterrupt:
+            print("\nMode exited. Back to menu.\n")
+            continue
 
 if __name__ == "__main__":
-    main_game_loop()
-
+    main()
